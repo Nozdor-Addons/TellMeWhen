@@ -23,7 +23,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("TellMeWhen", true)
 local LBF = LibStub("LibButtonFacade", true)
 local AceDB = LibStub("AceDB-3.0")
 
-TELLMEWHEN_VERSION = "3.0.3"
+TELLMEWHEN_VERSION = "3.0.5"
 TELLMEWHEN_VERSION_MINOR = ""
 TELLMEWHEN_WARNINGSTRING = "|cFFFF0000" .. L["ICON_TOOLTIP1"] .. " v" .. TELLMEWHEN_VERSION .. TELLMEWHEN_VERSION_MINOR .. ":|r "
 TELLMEWHEN_MAXGROUPS = 10 	--this is a default, used by SetTheory (addon), so dont rename
@@ -429,7 +429,7 @@ end
 -- EXECUTIVE FUNCTIONS,ETC
 -- --------------------------
 
-StaticPopupDialogs["TMW_RESTARTNEEDED"] = {
+--[[StaticPopupDialogs["TMW_RESTARTNEEDED"] = {
 	text = "A complete restart of WoW is required to use TellMeWhen "..TELLMEWHEN_VERSION..TELLMEWHEN_VERSION_MINOR..". Would you like to restart WoW now?", --not worth translating imo, most people will never see it by the time it gets translated.
 	button1 = EXIT_GAME,
 	button2 = CANCEL,
@@ -438,7 +438,7 @@ StaticPopupDialogs["TMW_RESTARTNEEDED"] = {
 	timeout = 0,
 	showAlert = true,
 	whileDead = true,
-}
+}--]]
 
 if LBF then
 	local function SkinCallback(arg, SkinID, Gloss, Backdrop, Group, Button, Colors)
@@ -460,10 +460,10 @@ if LBF then
 end
 
 function TMW:OnInitialize()
-	if TELLMEWHEN_VERSION >= "3.0.0" and TellMeWhen_Settings and (GetAddOnMetadata("TellMeWhen", "Version") ~= TELLMEWHEN_VERSION..TELLMEWHEN_VERSION_MINOR) then
-		StaticPopup_Show("TMW_RESTARTNEEDED")
-		return
-	end
+	--if TELLMEWHEN_VERSION >= "3.0.0" and TellMeWhen_Settings and (GetAddOnMetadata("TellMeWhen", "Version") ~= TELLMEWHEN_VERSION..TELLMEWHEN_VERSION_MINOR) then
+	--	StaticPopup_Show("TMW_RESTARTNEEDED")
+	--	return
+	--end
 	
 	SlashCmdList["TELLMEWHEN"] = TellMeWhen_SlashCommand
 	SLASH_TELLMEWHEN1 = "/tellmewhen"
