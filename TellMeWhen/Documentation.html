@@ -1,0 +1,261 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="creole/c">
+</head>
+<body><p>TellMeWhen is an addon that can display of abilities and show/hide them based on many different conditions and parameters.
+</p>
+<h2> Icon Settings </h2>
+<a name="universal"><h3> Universal Icon Settings </h3></a>
+<p>The following settings/features apply to all icons:
+</p>
+<ul><li> <b>Chose spell/item/buff/etc.</b> - Opens a dialog where you can input the name of the spell/item/buff/debuff/totem you wish to track. Doesn't apply to Temporary Weapon Enchant icons, these simply check your mainhand/offhand/thrown weapon.
+</li></ul>
+<ul><li> <b>Enable Icon</b> - Toggles whether the icon is enabled or not. Disabled icons will not use any CPU, will never be shown, and cannot be checked by the conditions of other icons (more on this later).
+</li></ul>
+<ul><li> <b>Icon Type</b> - Chooses the type of icon to display; there are currently 5 different icon types:
+</li><ul><li> <b><a href="#cooldownsettings">Cooldown</a></b> - Shows/hides the icon based on the cooldown state of the ability.
+</li><li> <b><a href="#buffdebuffsettings">Buff/Debuff</a></b> - Shows/hides the icon based on the presence/absence of a buff or debuff on a unit.
+</li><li> <b><a href="#reactivesettings">Reactive</a></b> - Shows/hides the icon based on the reactive state of an ability such as Kill Shot or Revenge.
+</li><li> <b><a href="#tenchsettings">Temporary Weapon Enchant</a></b> - Shows/hides the icon based on the presence/absence of a temporary enchant such as Flametounge Weapon or Deadly Poison.
+</li><li> <b><a href="#totemsettings">Totem/non MoG ghoul</a></b> - Shows/hides the icon based on the presence/absence of a totem or ghoul without the Master of Ghouls talent (Death Knights).
+</li></ul></ul>
+<ul><li> <b>Set Alpha Level</b> - Sets the alpha level (opacity/transparency/etc) of the icon.
+</li><ul><li> <b>Unusable/Absent Alpha Level</b> - Change the alpha of the icon when the ability of the icon is unusable or absent and the icon is set to show when it is unusable/absent or always show.
+</li><li> <b>Usable/Present Alpha Level</b> - Change the alpha of the icon when the ability of the icon is usable or present and the icon is set to show when it is usable/present or always show.
+</li><li> <b>Fake Hidden</b> - Checking this box will cause the icon to be hidden at all times, but while still treated as if it were not checked for purposes of having other icons check to see if this icon is shown. Do not use this if you wish to disable the icon, only use it if you wish to not display this icon while still have another icon's conditions check if it is shown. (more on this later)
+</li></ul></ul>
+<ul><li> <b>Add/Edit Condition</b> - See LINKHERE
+</li></ul>
+<ul><li> <b>Show Timer</b> - Show a cooldown animation on the icon (the clock animation) to show the icons cooldown/duration
+</li></ul>
+<ul><li> <b>Show Timer Number</b> - Show a number on the icon showing the time remaining on the cooldown/duration. REQUIRES <a href="http://wow.curse.com/downloads/wow-addons/details/omni-cc.aspx"> OmniCC</a> and that Show Timer be checked.
+</li></ul>
+<ul><li> <b>Copy from Another Icon</b> - Opens a GUI that can be used to copy the settings to be used for the current icon from another icon. Use the sliders on the window to choose which icon to copy the settings from. If a group is disabled or not enabled for the current spec, you must press the button to temporarily enable it. It will be set back to its original settings when the dialog is canceled/closed. Once you are content with the icon you are copying from, press the 'Copy' button to copy the settings.
+</li></ul>
+<ul><li> <b>Clear Settings</b> - Revert the icon back to a default, brand new, unconfigured icon.
+</li></ul>
+<a name="cooldownsettings"><h3> Cooldown Settings </h3></a>
+<p>The following settings, in addition to the <a href="#universal">universal icon settings</a>, apply to cooldown icons:
+</p>
+<ul><li> <b>Cooldown Type</b> - The type of cooldown to check
+</li><ul><li> <b>Spell or Ability</b> - An ability such as Explosive Shot or Mind Freeze
+</li><li> <b>Item</b> - An item such as a trinket or gloves with hand rockets, or a hearthstone
+</li></ul></ul>
+<ul><li> <b>Show Icon When</b> - Set when the icon should be shown.
+</li><ul><li> <b>Usable</b> - Show the icon when the spell/item is usable
+</li><li> <b>Unusable</b> - Show the icon when the spell/item is unusable
+</li><li> <b>Always</b> - Show the icon all the time, with a color distinction between usable and unusable.
+</li></ul></ul>
+<ul><li> <b>Range Check?</b> - Check to make usability also consider being in range/out of range to use the spell/item
+</li><li> <b>Power Check?</b> - Check to make usability also based on available resources (but not runes). Does not effect item cooldowns.
+</li></ul>
+<ul><li> <b>Unit Reaction</b> - Check the hostility/friendliness of the target.
+</li><ul><li> <b>All Units</b> - Don't check hostility/friendliness.
+</li><li> <b>Friendly Units</b> - Only show when the target is friendly, or if there is no target.
+</li><li> <b>Hostile Units</b> - Only show when the target is hostile (including neutral attackable).
+</li></ul></ul>
+<ul><li> <b>Bars</b> - Settings for overlay bars. Overlay bars provide a visual representation of the cooldown and the level of resource required for the ability. Most useful for classes that must heavily manage their resources (hunters, rogues, and warriors to some extent).
+</li><ul><li> <b>Show Power Bar</b> - Show a bar on the top half of the icon that represents resource required to use the ability (but not runes). The bar will fill down to empty as enough resource is obtained to use the ability.
+</li><li> <b>Show cooldown/timer bar</b> - Show a bar on the bottom half of the icon that represents the cooldown remaining. Fills down as the ability comes off cooldown.
+</li><li> <b> Fill Bars Up</b> - Causes bars to fill up instead of down, making them span the width of the icon when the ability can/should be used.
+</li></ul></ul>
+<a name="buffdebuffsettings"><h3> Buff/Debuff Settings </h3></a>
+<p>The following settings, in addition to the <a href="#universal">universal icon settings</a>, apply to cooldown icons:
+</p>
+<ul><li> <b>Stacks</b> - Opens a dialog to configure the number of stacks of the buff/debuff required to show the icon.
+</li><ul><li> <b>Minimum stacks to show</b> - Set the minimum number of stacks required to show the icon.
+</li><li> <b>Maximum stacks to show</b> - Set the maximum number of stacks that the icon will show for.
+</li></ul></ul>
+<ul><li> <b>Only Show if Cast by Self</b> - Only show the icon if the buff/debuff was casted by you and not another player.
+</li></ul>
+<ul><li> <b>Buff or Debuff?</b> - Set whether the icon should check for a buff or for a debuff.
+</li><ul><li> <b>Buff</b> - Check for a buff.
+</li><li> <b>Debuff</b> - Check for a debuff.
+</li></ul></ul>
+<ul><li> <b>Unit to watch</b> - Select the unit to check for the specified buff/debuff
+</li><ul><li> <b>Player</b> - Watch for the buff/debuff on you.
+</li><li> <b>Target</b> - Watch for the buff/debuff on your target.
+</li><li> <b>Target's Target</b> - Watch for the buff/debuff on your target's target.
+</li><li> <b>Focus</b> - Watch for the buff/debuff on your focus (set by /focus).
+</li><li> <b>Focus' Target</b> - Watch for the buff/debuff on your focus's target.
+</li><li> <b>Pet</b> - Watch for the buff/debuff on your pet.
+</li><li> <b>Pet's Target</b> - Watch for the buff/debuff on your pet's target.
+</li><li> <b>Mouseover</b> - Watch for the buff/debuff on the unit that you are mousing over either in the game world or on unit frames.
+</li><li> <b>Mouseover's Target</b> - Watch for the buff/debuff on your mouseover's target.
+</li><li> <b>Vehicle</b> - Watch for the buff/debuff on the vehicle that you are in.
+</li></ul></ul>
+<ul><li> <b>Show When Buff/Debuff</b> - Set when the icon should be shown.
+</li><ul><li> <b>Present</b> - Show the icon when the buff/debuff is present.
+</li><li> <b>Absent</b> - Show the icon when the buff/debuff is absent.
+</li><li> <b>Always</b> - Show the icon all the time, with a color distinction between present and absent that is configurable in the interface options menu.
+</li></ul></ul>
+<ul><li> <b>Unit Reaction</b> - Check the hostility/friendliness of the target.
+</li><ul><li> <b>All Units</b> - Don't check hostility/friendliness.
+</li><li> <b>Friendly Units</b> - Only show when the target is friendly, or if there is no target.
+</li><li> <b>Hostile Units</b> - Only show when the target is hostile (including neutral attackable).
+</li></ul></ul>
+<ul><li> <b>Bars</b> - Settings for overlay bars. Overlay bars provide a visual representation of the cooldown/duration and the level of resource required for the ability. Most useful for classes that must heavily manage their resources (hunters, rogues, and warriors to some extent).
+</li><ul><li> <b>Show Power Bar</b> - Show a bar on the top half of the icon that represents resource required to use the ability (but not runes). The bar will fill down to empty as enough resource is obtained to use the ability.
+</li><li> <b>Show cooldown/timer bar</b> - Show a bar on the bottom half of the icon that represents the duration of the buff/debuff. Fills down as the buff/debuff is expiring.
+</li><li> <b> Fill Bars Up</b> - Causes bars to fill up instead of down, making them span the width of the icon when the ability can/should be used.
+</li></ul></ul>
+<a name="reactivesettings"><h3> Reactive Settings </h3></a>
+<p>The following settings, in addition to the <a href="#universal">universal icon settings</a>, apply to reactive icons:
+</p>
+<ul><li> <b>Show Icon When</b> - Set when the icon should be shown.
+</li><ul><li> <b>Usable</b> - Show the icon when the spell is usable.
+</li><li> <b>Unusable</b> - Show the icon when the spell is unusable.
+</li><li> <b>Always</b> - Show the icon all the time, with a color distinction between usable and unusable.
+</li></ul></ul>
+<ul><li> <b>Cooldown Check?</b> - Check to make usability also consider the cooldown of the spell.
+</li><li> <b>Range Check?</b> - Check to make usability also consider being in range/out of range to use the spell.
+</li><li> <b>Power Check?</b> - Check to make usability also consider available resources (but not runes).
+</li></ul>
+<ul><li> <b>Unit Reaction</b> - Check the hostility/friendliness of the target.
+</li><ul><li> <b>All Units</b> - Don't check hostility/friendliness.
+</li><li> <b>Friendly Units</b> - Only show when the target is friendly, or if there is no target.
+</li><li> <b>Hostile Units</b> - Only show when the target is hostile (including neutral attackable).
+</li></ul></ul>
+<ul><li> <b>Bars</b> - Settings for overlay bars. Overlay bars provide a visual representation of the cooldown and the level of resource required for the ability. Most useful for classes that must heavily manage their resources (hunters, rogues, and warriors to some extent).
+</li><ul><li> <b>Show Power Bar</b> - Show a bar on the top half of the icon that represents resource required to use the ability (but not runes). The bar will fill down to empty as enough resource is obtained to use the ability.
+</li><li> <b>Show cooldown/timer bar</b> - Show a bar on the bottom half of the icon that represents the cooldown remaining. Fills down as the ability comes off cooldown.
+</li><li> <b> Fill Bars Up</b> - Causes bars to fill up instead of down, making them span the width of the icon when the ability can/should be used.
+</li></ul></ul>
+<a name="tenchsettings"><h3> Temporary Weapon Enchant Settings </h3></a>
+<p>The following settings, in addition to the <a href="#universal">universal icon settings</a>, apply to temporary weapon enchant icons:
+</p>
+<ul><li> <b>Weapon Slot to Monitor</b> - Selects the slot to monitor for a temporary weapon enchant.
+</li><ul><li> <b>Main Hand</b> - Set the icon to monitor your main hand weapon.
+</li><li> <b>Off Hand</b> - Set the icon to monitor your off hand weapon.
+</li><li> <b>Thrown Weapon</b> - Set the icon to monitor your thrown weapon.
+</li></ul></ul>
+<ul><li> <b>Show Icon When</b> - Set when the icon should be shown.
+</li><ul><li> <b>Present</b> - Show the icon when a temporary enchant is present.
+</li><li> <b>Absent</b> - Show the icon when a temporary enchant is absent.
+</li><li> <b>Always</b> - Show the icon all the time, with a color distinction between present and absent that is configurable in the interface options menu.
+</li></ul></ul>
+<a name="totemsettings"><h3> Totem/Non-MoG Ghoul Settings </h3></a>
+<p>The following settings, in addition to the <a href="#universal">universal icon settings</a>, apply to Totem/non-MoG Ghoul icons:
+</p>
+<ul><li> <b>Show Icon When</b> - Set when the icon should be shown.
+</li><ul><li> <b>Present</b> - Show the icon when a totem/non-MoG ghoul is present.
+</li><li> <b>Absent</b> - Show the icon when a totem/non-MoG ghoul is absent.
+</li><li> <b>Always</b> - Show the icon all the time, with a color distinction between present and absent that is configurable in the interface options menu.
+</li></ul></ul>
+<h2> Conditions </h2>
+<h4> The Condition Editor </h4>
+<p>The TellMeWhen condition editor allows you to specify many conditions that must be true in order for the icon to show. It includes the following items/settings:
+</p>
+<ul><li> <b>Check Box</b> - The first thing that you see when you open the condition editor is a check box in the upper left hand corner. Check this box to enable the first condition. Upon checking a box, another condition and another box will appear. Only check boxes for conditions that you need to use.
+</li></ul>
+<ul><li> <b>Type</b> - The first setting of every condition is the condition type. This specifies what the condition should be checking in order to determine if the icon should be shown or not. Types currently include:
+</li><ul><li> <b>Health</b> - Checks the health as a percentage of the specified unit.
+</li><li> <b>Primary Resource</b> - Checks the primary resource as a percentage of the specified unit. Checks mana for druids in caster/tree/moonkin form, energy for druids in cat form, runic power for death knights, focus for hunters and hunter pets, etc.
+</li><li> <b>Mana</b> - Checks the mana as a percentage of the specified unit.
+</li><li> <b>Energy</b> - Checks the energy as a percentage of the specified unit.
+</li><li> <b>Rage</b> - Checks the rage as a percentage of the specified unit.
+</li><li> <b>Focus</b> - Checks the focus as a percentage of the specified unit.
+</li><li> <b>Runic Power</b> - Checks the runic power as a percentage of the specified unit.
+</li><li> <b>Unit Exists</b> - Checks if the specified unit exists. A hunter would not want to check the happiness of their pet if their pet was not out.
+</li><li> <b>Icon Shown</b> - Checks if the specified icon is shown. The icon that is being checked must be enabled and have an alpha above 0 to be considered shown. If you do not want the icon that is being checked to be shown, check the 'Fake Hidden' option in the alpha settings of the icon that is being checked. This can be used to, for example, show a cooldown for earth shock that checks to see if an icon that checks the stacks of lightning shield is shown. Or for a mind blast icon that checks another icon that checks the number of shadow orbs (this was the ticket that got me to make this feature)
+</li><li> <b>Soul Shards (Warlock Only)</b> - Checks the number of soul shards that the player has.
+</li><li> <b>Holy Power (Paladin Only)</b> - Checks the amount of holy power that the player has.
+</li><li> <b>Combo Points (Druid and Rogue only)</b> - Checks the number of combo points that the player has on the unit.
+</li><li> <b>Eclipse (Druid Only)</b>  - Checks amount of eclipse power that the player has. range is -100 to 100, -100 is a lunar eclipse, 100 is a solar eclipse.
+</li><li> <b>Eclipse Direction (Druid Only)</b> - Checks the direction that the eclipse bar is going in. 0 is invalid and will always return false.
+</li><li> <b>Happiness (Hunter only)</b> - Checks the happiness of the player's pet.
+</li></ul></ul>
+<ul><li> <b>Icon</b> - Specify the icon to check for <b>Icon Shown</b> conditions
+</li></ul>
+<ul><li> <b>Unit</b> - Specify the unit to check. Some types cannot change this, text will be shown for those showing the only unit that they can check.
+</li><ul><li> <b>Player</b> - Check the condition on you.
+</li><li> <b>Target</b> - Check the condition on your target.
+</li><li> <b>Target's Target</b> - Check the condition on your target's target.
+</li><li> <b>Focus</b> - Check the condition on your focus (set by /focus).
+</li><li> <b>Focus' Target</b> - Check the condition on your focus's target.
+</li><li> <b>Pet</b> - Check the condition on your pet.
+</li><li> <b>Pet's Target</b> - Check the condition on your pet's target.
+</li><li> <b>Mouseover</b> - Check the condition on the unit that you are mousing over either in the game world or on unit frames.
+</li><li> <b>Mouseover's Target</b> - Check the condition on your mouseover's target.
+</li><li> <b>Vehicle</b> - Check the condition on the vehicle that you are in.
+</li></ul></ul>
+<ul><li> <b>Operator</b> - Specify how to compare the amount of the type on the specified unit with the value to check against. Self explanatory. May not be shown based on the type selected.
+</li></ul>
+<ul><li> <b>Value Slider</b> - Set the value that the amount of the type on the specified unit is being checked against. The range of this slider will change based on the type selected, or may not be shown at all if not needed for the type.
+</li></ul>
+<ul><li> <b>And / Or</b> - Specify whether the two conditions adjacent to the and/or dropdown should both be true or either be true. Conditions are checked from top to bottom.
+</li></ul>
+<p>For example, the following would return true:
+</p>
+<ul><li> Condition 1 (true)
+</li><ul><li> And
+</li></ul><li> Condition 2 (false)
+</li><ul><li> Or
+</li></ul><li> Condition 3 (true)
+</li></ul>
+<p>But this would return false:
+</p>
+<ul><li> Condition 1 (true)
+</li><ul><li> Or
+</li></ul><li> Condition 3 (true)
+</li><ul><li> And
+</li></ul><li> Condition 2 (false)
+</li></ul>
+<p>Think of it this way:
+((((Condition1 or Condition2) and Condition3) and Condition4) or Condition5)<br/>
+This would return true whenever Condition5 is true, regardless of any others.
+</p>
+<h2> Interface Options Panel </h2>
+<p>These are the settings for TellMeWhen that can be configured in Blizzard's interface options panel.
+</p>
+<h3> Main Options </h3>
+<ul><li> <b>Lock/Unlock Addon</b> - Toggles whether the groups are locked and ready for use or are unlocked and ready for configuration.
+</li></ul>
+<ul><li> <b>Bar Texture</b> - Select a LibSharedMedia bar texture to be used for the overlay bars on icons.
+</li></ul>
+<ul><li> <b>Update Interval</b> - Change how often icons are updated, in seconds. Does not affect overlay bars and some other features, but can greatly increase or reduce CPU usage based on the setting.
+</li></ul>
+<ul><li> <b>Number of Conditions</b> - Change the number of conditions available in the condition editor. Reducing this number below the highest number of 
+conditions that any icon has can cause problems.
+</li></ul>
+<ul><li> <b>Bars Ignore GCD</b> - If checked, cooldown bars will not change values if the cooldown triggered is a global cooldown.
+</li></ul>
+<ul><li> <b>Timers Ignore GCD</b> - If checked, timers and the cooldown clock will not trigger from a global cooldown.
+</li></ul>
+<ul><li> <b>Hightlight Timer Edge</b> - Highlights the edge of the cooldown timer (clock animation) to increase visibility.
+</li></ul>
+<ul><li> <b>Reset All</b> - Resets the data and position of all icons and groups, reverting everything back to the default settings.
+</li></ul>
+<h4> Colors </h4>
+<ul><li> <b>CD/Duration Begin</b> - Color of the cooldown/duration overlay bar when the cooldown/duration has just begun.
+</li></ul>
+<ul><li> <b>Cd/Duration Complete</b> - Color of the cooldown/duration overlay bar when the cooldown/duration is complete.
+</li></ul>
+<ul><li> <b>Out of range color</b> - Tint and alpha of icons when you are not in range of the target/specified unit to cast the spell/use the item.
+</li></ul>
+<ul><li> <b>Out of power color</b> - Tint and alpha of icons when you lack the Mana / Rage / Energy / Focus / Runic Power to cast the spell
+</li></ul>
+<ul><li> <b>Present Color</b> - The tint of an icon when the buff/debuff/enchant/totem is present and the icon is set to always show.
+</li></ul>
+<ul><li> <b>Absent Color</b> - The tint of an icon when the buff/debuff/enchant/totem is absent and the icon is set to always show.
+</li></ul>
+<h3> Groups </h3>
+<h4> Group Settings </h4>
+<ul><li> <b>Enable Group</b> - Toggles the group on/off. Groups toggled off will never be shown for any reason and will not consume any CPU.
+</li></ul>
+<ul><li> <b>Only show in combat</b> - Sets whether the group should only be shown in combat or should be shown all the time.
+</li></ul>
+<ul><li> <b>Primary Spec</b> - Sets whether the group should be shown while your primary spec is active or not.
+</li></ul>
+<ul><li> <b>Secondary Spec</b> - Sets whether the group should be shown while your secondary spec is active or not.
+</li></ul>
+<ul><li> <b>Columns</b> - Sets the number of columns that the group should display. This currently shifts icons around about, so use the Copy Settings feature to quickly migrate icon settings to the correct icons.
+</li></ul>
+<ul><li> <b>Rows</b> - Sets the number of rows that the group should display.
+</li></ul>
+<ul><li> <b>Stances</b> - Sets the stances/shapeshifts/etc that the group should show in. Checking 'None of the below' or 'Caster form' will make the group show while no stance/shapeshift/etc is active. A druid may wish to show a small group with some essential feral abilities when they are resto specced, but only when they are in the proper stance, for example. A feral druid probably does not care about his/her bear cooldowns while in cat form.
+</li></ul>
+<ul><li> <b>Reset Position</b> - Resets the group to the center of the screen in case it has been moved off the screen. Does not reset any data.
+</li></ul></body>
+</html>

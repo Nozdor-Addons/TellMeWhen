@@ -1,0 +1,1464 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd"> 
+
+	<Script file="Lib\LibStub\LibStub.lua"/>
+	<Include file="Lib\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+	<Include file="Lib\AceGUI-3.0\AceGUI-3.0.xml"/>
+	<Include file="Lib\AceAddon-3.0\AceAddon-3.0.xml"/>
+	<Include file="Lib\AceEvent-3.0\AceEvent-3.0.xml"/>
+	<Include file="Lib\AceTimer-3.0\AceTimer-3.0.xml"/>
+	<Include file="Lib\LibSharedMedia-3.0\lib.xml"/>
+	<Include file="Lib\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
+	<Include file="Lib\AceConfig-3.0\AceConfig-3.0.xml"/>
+	<Include file="Lib\AceLocale-3.0\AceLocale-3.0.xml"/>
+	<Include file="Lib\AceDB-3.0\AceDB-3.0.xml"/>
+	<Include file="Lib\AceDBOptions-3.0\AceDBOptions-3.0.xml"/>
+	<Script file="Lib\libdatabroker-1-1\LibDataBroker-1.1.lua"/>
+
+	<Script file="Localization\TellMeWhen-enUS.lua"/>
+	<Script file="Localization\TellMeWhen-deDE.lua"/>
+	<Script file="Localization\TellMeWhen-esES.lua"/>
+	<Script file="Localization\TellMeWhen-esMX.lua"/>
+	<Script file="Localization\TellMeWhen-frFR.lua"/>
+	<Script file="Localization\TellMeWhen-koKR.lua"/>
+	<Script file="Localization\TellMeWhen-ruRU.lua"/>
+	<Script file="Localization\TellMeWhen-zhCN.lua"/>
+	<Script file="Localization\TellMeWhen-zhTW.lua"/>
+
+	<Script file="TellMeWhen.lua"/>
+	<Script file="TellMeWhen_options.lua"/>
+	<Script file="LDB.lua"/>
+
+	<Frame name="TellMeWhen_EquivDropdown" inherits="UIDropDownMenuTemplate">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="100" y="-50"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>self:Hide()</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TellMeWhen_GroupTemplate" enableMouse="false" toplevel="true" movable="true" parent="UIParent" virtual="true" clampedtoscreen="true">
+		<Size>
+			<AbsDimension x="1" y="1"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parent_ResizeButton" parentKey="resizeButton" frameStrata="HIGH">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTexture" file="Interface\AddOns\TellMeWhen\Textures\Resize">
+							<Size>
+								<AbsDimension x="10" y="10"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Texture"]:SetVertexColor(0.6, 0.6, 0.6)
+					</OnLoad>
+					<OnMouseDown>
+						TMW:Group_StartSizing(self, button)
+					</OnMouseDown>
+					<OnMouseUp>
+						TMW:Group_StopSizing(self, button)
+					</OnMouseUp>
+					<OnEnter>
+						TMW:Group_ResizeOnEnter(self, "RESIZE", "RESIZE_TOOLTIP")
+						_G[self:GetName().."Texture"]:SetVertexColor(1, 1, 1)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+						_G[self:GetName().."Texture"]:SetVertexColor(0.6, 0.6, 0.6)
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Button name="TellMeWhen_IconTemplate" virtual="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="30" y="30"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Buttons\UI-EmptySlot-Disabled">
+					<Size>
+						<AbsDimension x="46" y="46"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" parentKey="texture" file="Interface\Icons\INV_Misc_QuestionMark">
+					<Size>
+						<AbsDimension x="30" y="30"/>
+					</Size>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCount" parentKey="countText" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton")
+			</OnLoad>
+			<OnEnter>
+				TellMeWhen_Icon_OnEnter(self, motion)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+			<OnMouseDown>
+				TellMeWhen_Icon_OnMouseDown(self, button)
+			</OnMouseDown>
+			<OnDragStart>
+				self:GetParent():StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				TMW:Group_StopMoving(self, button)
+			</OnDragStop>
+		</Scripts>
+		<Frames>
+			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+	</Button>
+	
+	<Frame name="TellMeWhen_IconDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+		<Scripts>
+			<OnLoad>
+				UIDropDownMenu_Initialize(self, TellMeWhen_IconMenu_Initialize, "MENU")
+			</OnLoad>
+			<OnShow>
+				UIDropDownMenu_Initialize(self, TellMeWhen_IconMenu_Initialize, "MENU")
+			</OnShow>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TellMeWhen_BasicFrame" parent="UIParent" virtual="true" movable="true" enableMouse="true" frameStrata="DIALOG">
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent">
+				<Offset x="0" y="0" />
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIconTexture" parentKey="icontexture">
+					<TexCoords left="0.07" right="0.93" top="0.07" bottom="0.93" />
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+							<Offset x="15" y="-12" />
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="TellMeWhen_ConditionEditorGroup" virtual="true">
+		<Size>
+			<AbsDimension x="580" y="70" />
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="16" right="85" top="-11" bottom="15" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+		</Backdrop>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset x="0" y="0" />
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="$parentType" parentKey="Type" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="30" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self,90)
+						UIDropDownMenu_Initialize(self, TMW.modules.Conditions.TypeMenu_DropDown, "DROPDOWN")
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentIcon" parentKey="Icon" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="140" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:Hide()
+						UIDropDownMenu_SetWidth(self,150)
+						UIDropDownMenu_Initialize(self, TMW.modules.Conditions.IconMenu_DropDown, "DROPDOWN")
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentUnit" parentKey="Unit" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="140" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self,90)
+						UIDropDownMenu_Initialize(self, TMW.modules.Conditions.UnitMenu_DropDown, "DROPDOWN")
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentOperator" parentKey="Operator" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="250" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self,150)
+						UIDropDownMenu_Initialize(self, TMW.modules.Conditions.OperatorMenu_DropDown, "DROPDOWN")
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Slider name="$parentSlider" parentKey="Slider" inherits="OptionsSliderTemplate" minvalue="0" maxvalue="100" valuestep="1" defaultvalue="100">
+				<Size x="440" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="50" y="-30" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						TMW.modules.Conditions:SetValText(self)
+					</OnValueChanged>
+					<OnLoad>
+						self:EnableMouseWheel(true)
+					</OnLoad>
+					<OnMouseWheel>
+						self:SetValue(self:GetValue()+delta)
+					</OnMouseWheel>
+				</Scripts>
+			</Slider>
+			<Frame name="$parentAndOr" parentKey="AndOr" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="480" y="30" />
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentTxt" parentKey="AndOrTxt" inherits="GameFontNormalSmall" text="" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self,50)
+						UIDropDownMenu_Initialize(self, TMW.modules.Conditions.AndOrMenu_DropDown, "DROPDOWN")
+						self:GetParent().AndOrTxt = self.AndOrTxt
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentCheck" parentKey="Check" inherits="UICheckButtonTemplate" text="">
+				<Size>
+					<AbsDimension x="25" y="25" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeto="$parent">
+						<Offset x="17" y="10" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetParent(self:GetParent():GetParent())
+					</OnLoad>
+					<OnClick>TMW.modules.Conditions:CheckboxHandler()</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentValText" parentKey="ValText" inherits="GameFontNormalLarge" text="" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT">
+							<Offset x="440" y="-14" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextType" parentKey="TextType" inherits="GameFontNormalSmall" text="" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeto="$parentType" relativePoint="TOP">
+							<Offset x="0" y="0" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextUnitOrIcon" parentKey="TextUnitOrIcon" inherits="GameFontNormalSmall" text="" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeto="$parentUnit" relativePoint="TOP">
+							<Offset x="0" y="0" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextOperator" parentKey="TextOperator" inherits="GameFontNormalSmall" text="" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeto="$parentOperator" relativePoint="TOP">
+							<Offset x="0" y="0" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextValue" parentKey="TextValue" inherits="GameFontNormalSmall" text="" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="440" y="9" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTextUnitDef" parentKey="TextUnitDef" inherits="GameFontNormalLarge" text="" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativeto="$parentUnit" relativePoint="CENTER">
+							<Offset x="0" y="2" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSliderMid" parentKey="SliderMid" inherits="GameFontHighlightSmall" text="">
+					<Anchors>
+						<Anchor point="TOP" relativeto="$parentSlider" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentCondtNumber" parentKey="CondtNumber" inherits="GameFontHighlightSmall" text="">
+					<Anchors>
+						<Anchor point="TOP" relativeto="$parentCheck" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.CondtNumber:SetText(self:GetID())
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="TellMeWhen_ConditionEditorFrame" inherits="TellMeWhen_BasicFrame">
+		<Size>
+			<AbsDimension x="600" y="360" />
+		</Size>
+		<Frames>
+			<ScrollFrame name="TellMeWhen_ConditionEditorScrollFrame" inherits="UIPanelScrollFrameCodeTemplate" movable="true" enableMouse="true" >
+				<Size>
+					<AbsDimension x="600" y="290" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<Frame name="TellMeWhen_ConditionEditorGroups" parent="UIParent" movable="true" enableMouse="true" >
+						<Size>
+							<AbsDimension x="580" y="150" />
+						</Size>
+						<Frames>
+							<Frame name="TellMeWhen_ConditionEditorGroup1" inherits="TellMeWhen_ConditionEditorGroup" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset x="0" y="-15" />
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										TellMeWhen_ConditionEditorGroup1AndOr:Hide()
+										self.CondtNumber:SetText(1)
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad> self:RegisterForDrag("LeftButton")</OnLoad>
+							<OnDragStart> self:GetParent():GetParent():StartMoving() </OnDragStart>
+							<OnDragStop> self:GetParent():GetParent():StopMovingOrSizing() </OnDragStop>
+						</Scripts>
+					</Frame>
+				</ScrollChild>
+				<Scripts>
+					<OnLoad> self:RegisterForDrag("LeftButton") self.scrollBarHideable = true</OnLoad>
+					<OnDragStart> self:GetParent():StartMoving() </OnDragStart>
+					<OnDragStop> self:GetParent():StopMovingOrSizing() </OnDragStop>
+				</Scripts>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="TellMeWhen_ConditionEditorFrame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="-52"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="TellMeWhen_ConditionEditorFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="55"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-22" y="-22" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>self:SetFrameLevel(self:GetFrameLevel() + 4)</OnLoad>
+					<OnClick>TellMeWhen_ConditionEditorFrame:Hide()</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+				<Size>
+					<AbsDimension x="60" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="15" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>TMW.modules.Conditions:ClearDialog()</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkayButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="60" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-75" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>TMW.modules.Conditions:EditorOkayOnClick()TellMeWhen_ConditionEditorFrame:Hide()</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="">
+				<Size>
+					<AbsDimension x="60" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-15" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>TellMeWhen_ConditionEditorFrame:Hide()</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentFS1" inherits="GameFontNormal" text="" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-15" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad> self:RegisterForDrag("LeftButton") self:Hide()</OnLoad>
+			<OnDragStart> self:StartMoving() </OnDragStart>
+			<OnDragStop> self:StopMovingOrSizing() </OnDragStop>
+		</Scripts>
+	</Frame>
+	
+	<Slider name="TMWAlphaSliderTemplate" inherits="OptionsSliderTemplate" minvalue="0" maxvalue="100" valuestep="1" defaultvalue="100" virtual="true">
+		<Size x="170" y="17"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentVal" inherits="GameFontHighlightSmall" text="HIGH">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMinMaxChanged>
+				local minValue, maxValue = self:GetMinMaxValues()
+				_G[self:GetName() .. "Low"]:SetText(minValue .. "%")
+				_G[self:GetName() .. "High"]:SetText(maxValue .. "%")
+			</OnMinMaxChanged>
+			<OnValueChanged>
+				_G[self:GetName() .. "Val"]:SetText(self:GetValue() .. "%")
+			</OnValueChanged>
+			<OnMouseUp>
+				TMW.modules.IconEditor:CheckOrChange()
+			</OnMouseUp>
+			<OnLoad>
+				self:EnableMouseWheel(true)
+			</OnLoad>
+			<OnMouseWheel>
+				self:SetValue(self:GetValue()+delta)
+			</OnMouseWheel>
+		</Scripts>
+	</Slider>
+
+	<Slider name="TMWStackSliderTemplate" inherits="OptionsSliderTemplate" minvalue="0" maxvalue="20" valuestep="1" defaultvalue="100" virtual="true">
+		<Size x="150" y="17"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentVal" inherits="GameFontHighlightSmall" text="HIGH">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMinMaxChanged>
+				local minValue, maxValue = self:GetMinMaxValues()
+				_G[self:GetName() .. "Low"]:SetText(minValue)
+				_G[self:GetName() .. "High"]:SetText(maxValue)
+			</OnMinMaxChanged>
+			<OnValueChanged>
+				_G[self:GetName() .. "Val"]:SetFormattedText(STACKS,self:GetValue())
+			</OnValueChanged>
+			<OnMouseUp>
+				self:SetMinMaxValues(max(0,(self:GetValue()-20)),max(20,(self:GetValue()+20)))
+			</OnMouseUp>
+			<OnLoad>
+				self:EnableMouseWheel(true)
+			</OnLoad>
+			<OnMouseWheel>
+				self:SetValue(self:GetValue()+delta)
+				self:SetMinMaxValues(max(0,(self:GetValue()-20)),max(20,(self:GetValue()+20)))
+			</OnMouseWheel>
+		</Scripts>
+	</Slider>
+
+	<Frame name="TellMeWhen_ChooseNameFrame" inherits="TellMeWhen_BasicFrame" parent="UIParent" movable="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="450" y="210"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentFS1" inherits="GameFontNormal" text="" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-15" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText"  inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="430" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-22" y="-22" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>self:SetFrameLevel(self:GetFrameLevel() + 4)</OnLoad>
+					<OnClick>self:GetParent():Hide()</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkayButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="60" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-75" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>TMW.modules.ChooseName:OK()</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="">
+				<Size>
+					<AbsDimension x="60" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-15" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>self:GetParent():Hide()</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="TellMeWhen_EquivSelectDropdown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="76" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self,200)
+						UIDropDownMenu_Initialize(self, TMW.modules.ChooseName.Equiv_DropDown, "DROPDOWN")
+					</OnLoad>
+					<OnEnter>
+						TMW.modules.ChooseName:Equiv_OnEnter(self)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<EditBox name="$parentEditBox" historyLines="1" inherits="AutoCompleteEditBoxTemplate">
+				<Size>
+					<AbsDimension x="400" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" >
+						<Offset>
+							<AbsDimension x="0" y="45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" x="-10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" x="10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
+							<Size>
+								<AbsDimension x="0" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed>
+						TMW.modules.ChooseName:OK()
+					</OnEnterPressed>
+					<OnEscapePressed>
+						self:GetParent():Hide()
+					</OnEscapePressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<EditBox name="$parentICDEditBox" historyLines="1" numeric="true" inherits="AutoCompleteEditBoxTemplate">
+				<Size>
+					<AbsDimension x="70" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="20" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentFS1" inherits="GameFontNormalSmall" text="" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset x="10" y="0" />
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" x="-10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" x="10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
+							<Size>
+								<AbsDimension x="0" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed>
+						TMW.modules.ChooseName:OK()
+					</OnEnterPressed>
+					<OnEscapePressed>
+						self:GetParent():Hide()
+					</OnEscapePressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad> self:RegisterForDrag("LeftButton") self:Hide()</OnLoad>
+			<OnDragStart> self:StartMoving() </OnDragStart>
+			<OnDragStop> self:StopMovingOrSizing() </OnDragStop>
+			<OnEscapePressed> self:Hide() </OnEscapePressed>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="TellMeWhen_EditorFrame" inherits="TellMeWhen_BasicFrame" parent="UIParent" movable="true" enableMouse="true" >
+		<Size>
+			<AbsDimension x="400" y="335" />
+		</Size>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-22" y="-22" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>self:SetFrameLevel(self:GetFrameLevel() + 4)</OnLoad>
+					<OnClick>self:GetParent():Hide()</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkayButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="60" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-75" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>TMW.modules.IconEditor:OK() self:GetParent():Hide()</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="">
+				<Size>
+					<AbsDimension x="60" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-15" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>self:GetParent():Hide()</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Frame name="TellMeWhen_AlphaEditorFrame" parent="TellMeWhen_EditorFrame" enableMouse="true" >
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="15" right="15" top="5" bottom="0" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+				</Backdrop>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="400" y="175" />
+				</Size>
+				<Frames>
+					<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+						<Size>
+							<AbsDimension x="70" y="20" />
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset x="15" y="5" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>TMW.modules.AlphaEditor:Reset()</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentRevertButton" inherits="UIPanelButtonTemplate" text="REVERT">
+						<Size>
+							<AbsDimension x="70" y="20" />
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentResetButton" relativePoint="RIGHT">
+								<Offset x="0" y="0" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>TMW.modules.AlphaEditor:Load()</OnClick>
+						</Scripts>
+					</Button>
+
+					<Slider name="$parentAlphaSlider" inherits="TMWAlphaSliderTemplate" valuestep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="20" y="-35" />
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="$parentUnAlphaSlider" inherits="TMWAlphaSliderTemplate" valuestep="1">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset x="-20" y="-35" />
+							</Anchor>
+						</Anchors>
+					</Slider>
+					
+					<Slider name="$parentDurationSlider" inherits="TMWAlphaSliderTemplate" valuestep="1">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentAlphaSlider" relativePoint="BOTTOM">
+								<Offset x="0" y="-25" />
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="$parentStackSlider" inherits="TMWAlphaSliderTemplate" valuestep="1">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentUnAlphaSlider" relativePoint="BOTTOM">
+								<Offset x="0" y="-25" />
+							</Anchor>
+						</Anchors>
+					</Slider>
+					
+					<Slider name="$parentConditionAlphaSlider" inherits="TMWAlphaSliderTemplate" valuestep="1" defaultvalue="0">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentDurationSlider" relativePoint="BOTTOM">
+								<Offset x="0" y="-25" />
+							</Anchor>
+						</Anchors>
+					</Slider>
+
+					<CheckButton name="$parentFakeHidden" inherits="UICheckButtonTemplate" text="">
+						<Size>
+							<AbsDimension x="30" y="30" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentStackSlider" relativePoint="BOTTOMLEFT">
+								<Offset x="6" y="-18" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TMW.modules.IconEditor:CheckOrChange()
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentFS1" inherits="GameFontNormal" text="" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset x="0" y="-7" />
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad> self:RegisterForDrag("LeftButton") </OnLoad>
+					<OnDragStart> self:GetParent():StartMoving() </OnDragStart>
+					<OnDragStop> self:GetParent():StopMovingOrSizing() </OnDragStop>
+				</Scripts>
+			</Frame>
+			
+			
+			
+			<Frame name="TellMeWhen_DurationEditorFrame" parent="TellMeWhen_EditorFrame" enableMouse="true" >
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="15" right="15" top="5" bottom="0" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+				</Backdrop>
+				<Size>
+					<AbsDimension x="400" y="90" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="TellMeWhen_AlphaEditorFrame" relativePoint="BOTTOM">
+						<Offset x="0" y="0" />
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+						<Size>
+							<AbsDimension x="70" y="20" />
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset x="15" y="5" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>TMW.modules.DurationEditor:Reset()</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentRevertButton" inherits="UIPanelButtonTemplate" text="REVERT">
+						<Size>
+							<AbsDimension x="70" y="20" />
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentResetButton" relativePoint="RIGHT">
+								<Offset x="0" y="0" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>TMW.modules.DurationEditor:Load()</OnClick>
+						</Scripts>
+					</Button>
+
+					<Slider name="$parentMinSlider" inherits="TMWStackSliderTemplate" valuestep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="40" y="-35" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnValueChanged>
+								_G[self:GetName() .. "Val"]:SetFormattedText("%d %s",self:GetValue(),SECONDS)
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<Slider name="$parentMaxSlider" inherits="TMWStackSliderTemplate" valuestep="1">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset x="-20" y="-35" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnValueChanged>
+								_G[self:GetName() .. "Val"]:SetFormattedText("%d %s",self:GetValue(),SECONDS)
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					
+					<CheckButton name="$parentMinCheck" inherits="UICheckButtonTemplate" text="">
+						<Size>
+							<AbsDimension x="25" y="25" />
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeto="$parentMinSlider" relativePoint="LEFT">
+								<Offset x="0" y="0" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if self:GetChecked() then
+									TellMeWhen_DurationEditorFrameMinSlider:Enable()
+									TellMeWhen_DurationEditorFrameMinSlider:SetAlpha(1)
+								else
+									TellMeWhen_DurationEditorFrameMinSlider:Disable()
+									TellMeWhen_DurationEditorFrameMinSlider:SetAlpha(.4)
+								end
+								TMW.modules.IconEditor:CheckOrChange()
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentMaxCheck" inherits="UICheckButtonTemplate" text="">
+						<Size>
+							<AbsDimension x="25" y="25" />
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeto="$parentMaxSlider" relativePoint="LEFT">
+								<Offset x="0" y="0" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if self:GetChecked() then
+									TellMeWhen_DurationEditorFrameMaxSlider:Enable()
+									TellMeWhen_DurationEditorFrameMaxSlider:SetAlpha(1)
+								else
+									TellMeWhen_DurationEditorFrameMaxSlider:Disable()
+									TellMeWhen_DurationEditorFrameMaxSlider:SetAlpha(.4)
+								end
+								TMW.modules.IconEditor:CheckOrChange()
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentFS1" inherits="GameFontNormal" text="" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset x="0" y="-7" />
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad> self:RegisterForDrag("LeftButton") </OnLoad>
+					<OnDragStart> self:GetParent():StartMoving() </OnDragStart>
+					<OnDragStop> self:GetParent():StopMovingOrSizing() </OnDragStop>
+				</Scripts>
+			</Frame>
+			
+			
+			
+			<Frame name="TellMeWhen_StackEditorFrame" parent="TellMeWhen_EditorFrame" enableMouse="true">
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="15" right="15" top="5" bottom="0" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32" />
+					</TileSize>
+				</Backdrop>
+				<Size>
+					<AbsDimension x="400" y="90" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="TellMeWhen_DurationEditorFrame" relativePoint="BOTTOM">
+						<Offset x="0" y="0" />
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+						<Size>
+							<AbsDimension x="70" y="20" />
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset x="15" y="5" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>TMW.modules.StackEditor:Reset()</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentRevertButton" inherits="UIPanelButtonTemplate" text="REVERT">
+						<Size>
+							<AbsDimension x="70" y="20" />
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentResetButton" relativePoint="RIGHT">
+								<Offset x="0" y="0" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>TMW.modules.StackEditor:Load()</OnClick>
+						</Scripts>
+					</Button>
+
+					
+					<Slider name="$parentMinSlider" inherits="TMWStackSliderTemplate" valuestep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="40" y="-35" />
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="$parentMaxSlider" inherits="TMWStackSliderTemplate" valuestep="1">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset x="-20" y="-35" />
+							</Anchor>
+						</Anchors>
+					</Slider>
+					
+					<CheckButton name="$parentMinCheck" inherits="UICheckButtonTemplate" text="">
+						<Size>
+							<AbsDimension x="25" y="25" />
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeto="$parentMinSlider" relativePoint="LEFT">
+								<Offset x="0" y="0" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if self:GetChecked() then
+									TellMeWhen_StackEditorFrameMinSlider:Enable()
+									TellMeWhen_StackEditorFrameMinSlider:SetAlpha(1)
+								else
+									TellMeWhen_StackEditorFrameMinSlider:Disable()
+									TellMeWhen_StackEditorFrameMinSlider:SetAlpha(.4)
+								end
+								TMW.modules.IconEditor:CheckOrChange()
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentMaxCheck" inherits="UICheckButtonTemplate" text="">
+						<Size>
+							<AbsDimension x="25" y="25" />
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeto="$parentMaxSlider" relativePoint="LEFT">
+								<Offset x="0" y="0" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if self:GetChecked() then
+									TellMeWhen_StackEditorFrameMaxSlider:Enable()
+									TellMeWhen_StackEditorFrameMaxSlider:SetAlpha(1)
+								else
+									TellMeWhen_StackEditorFrameMaxSlider:Disable()
+									TellMeWhen_StackEditorFrameMaxSlider:SetAlpha(.4)
+								end
+								TMW.modules.IconEditor:CheckOrChange()
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentFS1" inherits="GameFontNormal" text="" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset x="0" y="-7" />
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad> self:RegisterForDrag("LeftButton")</OnLoad>
+					<OnDragStart> self:GetParent():StartMoving() </OnDragStart>
+					<OnDragStop> self:GetParent():StopMovingOrSizing() </OnDragStop>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>self:RegisterForDrag("LeftButton") self:Hide()</OnLoad>
+			<OnDragStart> self:StartMoving() </OnDragStart>
+			<OnDragStop> self:StopMovingOrSizing() </OnDragStop>
+		</Scripts>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentFS1" inherits="GameFontNormal" text="" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-15" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="TellMeWhen_MetaEditorGroup" virtual="true">
+		<Size>
+			<AbsDimension x="230" y="30" />
+		</Size>
+		<Frames>
+			<Frame name="$parentIcon" parentKey="icon" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset x="-13" y="-2" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self,150)
+						UIDropDownMenu_Initialize(self, TMW.modules.MetaEditor.IconMenu, "DROPDOWN")
+						_G[self:GetName() .. "Button"]:SetFrameLevel(self:GetFrameLevel()+1)
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentUp" parentKey="up">
+				<Size>
+					<AbsDimension x="30" y="30" />
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT">
+						<Offset x="-15" y="2" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					 <OnClick>TMW.modules.MetaEditor:UpOrDown(self,-1)</OnClick>
+				</Scripts>
+				<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentDown" parentKey="down">
+				<Size>
+					<AbsDimension x="30" y="30" />
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentUp" relativePoint="RIGHT">
+						<Offset x="-5" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					 <OnClick>TMW.modules.MetaEditor:UpOrDown(self,1)</OnClick>
+				</Scripts>
+				<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+				<DisabledTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentDelete" parentKey="delete" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDown" relativePoint="RIGHT">
+						<Offset x="-7" y="0" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>TMW.modules.MetaEditor:Delete(self)</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentInsert" parentKey="insert">
+				<Size>
+					<AbsDimension x="35" y="35" />
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset x="8" y="0" />
+					</Anchor>
+				</Anchors>
+				<NormalTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+				<DisabledTexture urgency="5" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<Scripts>
+					 <OnLoad>
+						 self:GetPushedTexture():SetRotation(math.pi/-2)
+						 self:GetNormalTexture():SetRotation(math.pi/-2)
+						 self:GetDisabledTexture():SetRotation(math.pi/-2)
+						 self:GetHighlightTexture():SetRotation(math.pi/-2)
+					</OnLoad>
+					<OnClick>TMW.modules.MetaEditor:Insert(self)</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentValText" inherits="GameFontNormalLarge" text="" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT">
+							<Offset x="440" y="-14" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="TellMeWhen_MetaEditorFrame" inherits="TellMeWhen_BasicFrame">
+		<Size>
+			<AbsDimension x="300" y="400" />
+		</Size>
+		<Frames>
+			<Frame name="TellMeWhen_MetaEditorGroup1" inherits="TellMeWhen_MetaEditorGroup" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="15" y="-40" />
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="TellMeWhen_MetaEditorGroup2" inherits="TellMeWhen_MetaEditorGroup" id="2"/>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-22" y="-22" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>self:SetFrameLevel(self:GetFrameLevel() + 4)</OnLoad>
+					<OnClick>self:GetParent():Hide()</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+				<Size>
+					<AbsDimension x="60" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="15" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>TMW.modules.MetaEditor:Reset()</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size>
+					<AbsDimension x="60" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-15" y="15" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>self:GetParent():Hide()</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentFS1" inherits="GameFontNormal" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-15" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad> self:RegisterForDrag("LeftButton") self:Hide()</OnLoad>
+			<OnDragStart> self:StartMoving() </OnDragStart>
+			<OnDragStop> self:StopMovingOrSizing() </OnDragStop>
+		</Scripts>
+	</Frame>
+	
+	
+	
+</Ui>
+
+
+
+
