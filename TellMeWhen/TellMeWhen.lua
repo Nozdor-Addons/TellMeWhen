@@ -1,4 +1,4 @@
--- --------------------
+﻿-- --------------------
 -- TellMeWhen
 -- Originally by Nephthys of Hyjal <lieandswell@yahoo.com>
 -- Other contributions by 
@@ -210,7 +210,7 @@ TMW.Defaults = {
 			NotInVehicle	= false,
 			PrimarySpec		= true,
 			SecondarySpec	= true,
-HideTalents		= {
+			HideTalents		= {
 				["*"] = "0",
 			},
 			ShowTalents		= {
@@ -808,6 +808,18 @@ function TMW:EnteringWorld()
 	TMW.EnteredWorld = true
 	TMW:RegisterEvent("PLAYER_TALENT_UPDATE", "TalentUpdate")
 	TMW:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "TalentUpdate")
+	TMW:TalentUpdate()
+	if not GetTalentInfo(1, 1) then
+		if TMW.talentReadyTimer then
+			TMW:CancelTimer(TMW.talentReadyTimer, 1)
+		end
+		TMW.talentReadyTimer = TMW:ScheduleRepeatingTimer("TalentReadyRefresh", 0.2)
+	else
+		if TMW.talentReadyTimer then
+			TMW:CancelTimer(TMW.talentReadyTimer, 1)
+			TMW.talentReadyTimer = nil
+		end
+	end
 	if not TMW.Warned then
 		TMW:CancelTimer(warnhandler, 1)
 		warnhandler = TMW:ScheduleTimer("Warn",20)
@@ -819,6 +831,16 @@ end
 function TMW:TalentUpdate()
 	TMW:CancelTimer(talenthandler, 1)
 	talenthandler = TMW:ScheduleTimer("Update",1)
+end
+
+function TMW:TalentReadyRefresh()
+	if GetTalentInfo(1, 1) then
+		if TMW.talentReadyTimer then
+			TMW:CancelTimer(TMW.talentReadyTimer, 1)
+			TMW.talentReadyTimer = nil
+		end
+		TMW:TalentUpdate()
+	end
 end
 
 function TMW:Warn()
@@ -932,42 +954,41 @@ function TMW:Group_Update(groupID)
 	
 	group.CorrectSpec = true
 
-	local function TalentIsLearned(key)
-		if not key or key == "0" then return false end
-		local tab, idx = strmatch(key, "^(%d+):(%d+)$")
-		tab, idx = tonumber(tab), tonumber(idx)
-		if not tab or not idx then return false end
-		local _, _, _, _, rank = GetTalentInfo(tab, idx)
-		return rank and rank > 0
-	end
-
-	local hide = group.HideTalents
-	local show = group.ShowTalents
-
-	if hide then
-		for i = 1, 5 do
-			local key = hide[i]
-			if key and key ~= "0" and TalentIsLearned(key) then
-				group.CorrectSpec = false
-				break
-			end
+	if GetTalentInfo(1, 1) then
+		local function TalentIsLearned(key)
+			if not key or key == "0" then return false end
+			local tab, idx = strmatch(key, "^(%d+):(%d+)$")
+			tab, idx = tonumber(tab), tonumber(idx)
+			if not tab or not idx then return false end
+			local _, _, _, _, rank = GetTalentInfo(tab, idx)
+			return rank and rank > 0
 		end
-	end
 
-	if group.CorrectSpec and show then
-		local anyShow = false
-		for i = 1, 5 do
-			local key = show[i]
-			if key and key ~= "0" then
-				anyShow = true
-				if not TalentIsLearned(key) then
+		local show = group.ShowTalents
+		local hide = group.HideTalents
+
+		if hide then
+			for i = 1, 5 do
+				local key = hide[i]
+				if key and key ~= "0" and TalentIsLearned(key) then
 					group.CorrectSpec = false
 					break
 				end
 			end
 		end
+
+		if group.CorrectSpec and show then
+			for i = 1, 5 do
+				local key = show[i]
+				if key and key ~= "0" then
+					if not TalentIsLearned(key) then
+						group.CorrectSpec = false
+						break
+					end
+				end
+			end
+		end
 	end
-	
 	if LBF then
 		TMW.DontRun = true
 		local lbfs = db.profile.Groups[groupID]["LBF"]
