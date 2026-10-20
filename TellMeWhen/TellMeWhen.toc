@@ -11,5 +11,6 @@
 ## SavedVariables: TellMeWhenDB
 ## X-Embeds: LibStub, Ace3, AceGUI-3.0-SharedMediaWidgets, LibSharedMedia-3.0, LibDataBroker-1.1
 ## X-Category: Combat
+## X-Nozdor-DemonHunter: 1
 
 TellMeWhen.xml

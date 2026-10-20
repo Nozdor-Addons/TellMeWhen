@@ -294,17 +294,17 @@ TMW.Condition_Defaults = TMW.Icon_Defaults.Conditions["**"]
 
 TMW.BE = {	--Much of these are thanks to Malazee @ US-Dalaran's chart: http://forums.wow-petopia.com/download/file.php?mode=view&id=4979 and spreadsheet https://spreadsheets.google.com/ccc?key=0Aox2ZHZE6e_SdHhTc0tZam05QVJDU0lONnp0ZVgzdkE&hl=en#gid=18
 	debuffs = {
-		CrowdControl = "339;2637;33786;118;61305;28272;61721;61780;28271;1499;60192;19503;19386;20066;10326;9484;6770;2094;51514;76780;710;5782;6358", -- by calico0 of Curse
+		CrowdControl = "339;2637;33786;118;61305;28272;61721;61780;28271;1499;60192;19503;19386;20066;10326;9484;6770;2094;51514;76780;710;5782;6358;217832", -- by calico0 of Curse
 		Bleeding = "9007;1822;1079;33745;1943;703;94009;43104;89775",
-		Incapacitated = "1776;20066;49203",
-		Feared = "5782;5246;8122;10326;1513;5484;6789",
-		Stunned = "1833;408;91800;5211;9005;22570;19577;56626;44572;82691;90337;853;2812;85388;64044;20549;46968;30283;20252;65929;7922;12809;50519",
+		Incapacitated = "1776;20066;49203;217832",
+		Feared = "5782;5246;8122;10326;1513;5484;6789;207684",
+		Stunned = "1833;408;91800;5211;9005;22570;19577;56626;44572;82691;90337;853;2812;85388;64044;20549;46968;30283;20252;65929;7922;12809;50519;179057;371700",
 		--DontMelee = "5277;871;Retaliation;Dispersion;Hand of Sacrifice;Hand of Protection;Divine Shield;Divine Protection;Ice Block;Icebound Fortitude;Cyclone;Banish",  --does somebody want to update these for me?
 		--MovementSlowed = "Incapacitating Shout;Chains of Ice;Icy Clutch;Slow;Daze;Hamstring;Piercing Howl;Wing Clip;Ice Trap;Frostbolt;Cone of Cold;Blast Wave;Mind Flay;Crippling Poison;Deadly Throw;Frost Shock;Earthbind;Curse of Exhaustion",
 		Disoriented = "19503;31661;2094;51514",
 		Silenced = "47476;78675;34490;55021;18469;31935;15487;1330;19647;18498;25046;80483;50613;28730;69179",
 		Disarmed = "51722;676;64058;50541;91644",
-		Rooted = "122;23694;58373;64695;19185;64803;4167;54706;50245;90327;16979;83301;83302",
+		Rooted = "122;23694;58373;64695;19185;64803;4167;54706;50245;90327;16979;83301;83302;371718",
 		PhysicalDmgTaken = "30070;58683;81326;50518;55749",
 		SpellDamageTaken = "93068;1490;65142;85547;60433;34889;24844",
 		SpellCritTaken = "17800;22959",
@@ -320,12 +320,12 @@ TMW.BE = {	--Much of these are thanks to Malazee @ US-Dalaran's chart: http://fo
 		ImmuneToMagicCC = "642;45438;34471;19574;33786;710",
 		IncreasedStats = "79061;79063;90363",
 		IncreasedDamage = "75447;82930",
-		IncreasedCrit = "24932;29801;51701;51470;24604;90309",
+		IncreasedCrit = "24932;29801;51701;51470;24604;90309;371125",
 		IncreasedAP = "79102;53138;19506;30808",
 		IncreasedSPsix = "79058;52109",
 		IncreasedSPten = "77747;53646",
 		IncreasedPhysHaste = "55610;53290;8515",
-		IncreasedSpellHaste = "2895;24907;49868",
+		IncreasedSpellHaste = "2895;24907;49868;371750",
 		BurstHaste = "2825;32182;80353;90355",
 		BonusAgiStr = "6673;8076;57330;93435",
 		BonusStamina = "79105;469;6307;90364",
@@ -354,8 +354,21 @@ TMW.GCDSpells = {
 	SHAMAN=324, -- lightning shield
 	HUNTER=1978, -- serpent sting
 	DEATHKNIGHT=47541, -- death coil
+	DEMONHUNTER=162794, -- chaos strike
 }
 GCDSpell = TMW.GCDSpells[pclass]
+
+TMW.DHGCDSpells = {162794, 371706, 204157} -- chaos strike, consume, throw glaive
+function TMW:UpdateGCDSpell()
+	if pclass ~= "DEMONHUNTER" then return end
+	for _, id in ipairs(TMW.DHGCDSpells) do
+		local name = GetSpellInfo(id)
+		if name and GetSpellInfo(name) then
+			GCDSpell = id
+			return
+		end
+	end
+end
 
 TMW.Chakra = {
 	{abid = 88685, buffid = 81206}, 	-- sanctuary, prayer of healing,mending
@@ -406,6 +419,9 @@ do -- STANCES
 		{class = "PALADIN",		id = 7294},		-- Retribution Aura
 
 		{class = "WARLOCK",		id = 47241},	-- Metamorphosis
+
+		{class = "DEMONHUNTER",	id = 191427},	-- Metamorphosis
+		{class = "DEMONHUNTER",	id = 371710},	-- Void Metamorphosis
 	}
 
 	TMW.CSN = {
@@ -734,6 +750,7 @@ end
 
 function TMW:Update()
 	if not (TMW.EnteredWorld and TMW.VarsLoaded) then return end
+	TMW:UpdateGCDSpell()
 	UPDATE_INTERVAL = db.profile.Interval or UPDATE_INTERVAL
 	TELLMEWHEN_ICONSPACING = db.profile.Spacing
 	TELLMEWHEN_MAXGROUPS = db.profile.NumGroups
@@ -808,6 +825,9 @@ function TMW:EnteringWorld()
 	TMW.EnteredWorld = true
 	TMW:RegisterEvent("PLAYER_TALENT_UPDATE", "TalentUpdate")
 	TMW:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "TalentUpdate")
+	if pclass == "DEMONHUNTER" then
+		TMW:RegisterEvent("LEARNED_SPELL_IN_TAB", "UpdateGCDSpell")
+	end
 	TMW:TalentUpdate()
 	if not GetTalentInfo(1, 1) then
 		if TMW.talentReadyTimer then
@@ -851,7 +871,9 @@ function TMW:Warn()
 end
 
 function TMW:OnUpdate()
-	_,GCD=GetSpellCooldown(GCDSpell)
+	if GCDSpell then
+		_,GCD=GetSpellCooldown(GCDSpell)
+	end
 end
 
 -- -----------
